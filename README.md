@@ -25,3 +25,9 @@ Interactive 3D Graphics and Animation
 ### Compile and Run
     make
     ./frogger
+
+### Marking
+* PA: Collision detection. Working game. Performance meter/OSD. Score.
+* CR: Road and river.
+* DI: Basic hierarchical model, keyframe animation
+* HD: Visual enhancements. Better model and animation. Flattened or exploded frog.

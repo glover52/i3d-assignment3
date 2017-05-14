@@ -3,6 +3,7 @@
 #include "state.h"
 #include "player.h"
 #include "level.h"
+#include <string.h>
 
 Globals globals;
 
@@ -54,6 +55,77 @@ static void reshape(int width, int height) {
     applyProjectionMatrix(&globals.camera);
 }
 
+static void renderText(const char* text, const GLdouble *color, const GLint *pos) {
+    glColor3dv(color);
+    glRasterPos2iv(pos);
+
+    for (size_t i = 0; i < strlen(text); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, text[i]);
+    }
+}
+
+static void renderScore(int score) {
+    const GLdouble red[] = {1.0, 0.0, 0.0};
+    const GLint pos[] = {10, 40};
+    char buffer[40];
+
+    snprintf(buffer, sizeof buffer, "Score: %12d", score);
+
+    renderText(buffer, red, pos);
+}
+
+static void renderFrameRate(double frameRate) {
+    const GLdouble orange[] = {1.0, 0.7, 0.0};
+    const GLint pos[] = {10, 25};
+    char buffer[40];
+
+    snprintf(buffer, sizeof buffer, "Frame rate: %5.0f / s", frameRate);
+
+    renderText(buffer, orange, pos);
+}
+
+static void renderFramePeriod(double framePeriod) {
+    const GLdouble blue[] = {0.0, 1.0, 1.0};
+    const GLint pos[] = {10, 10};
+    char buffer[40];
+
+    snprintf(buffer, sizeof buffer, "Frame time: %5.0f ms", framePeriod);
+
+    renderText(buffer, blue, pos);
+}
+
+static void renderOSD(OSD *osd) {
+    osd->frames++;
+
+    glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+
+    int width = glutGet(GLUT_WINDOW_WIDTH);
+    int height = glutGet(GLUT_WINDOW_HEIGHT);
+    glOrtho(0.0, width, 0.0, height, -1.0, 1.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    renderScore(osd->score);
+    renderFrameRate(osd->frameRate);
+    renderFramePeriod(1000.0 / osd->frameRate);
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+
+    glPopAttrib();
+}
+
 static void render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -65,6 +137,8 @@ static void render()
 
     renderPlayer(&globals.player, &globals.drawingFlags);
     renderLevel(&globals.level, &globals.drawingFlags);
+
+    renderOSD(&globals.osd);
 
     glutSwapBuffers();
 }
@@ -80,6 +154,14 @@ static void update()
     int dtMs = t - tLast;
     float dt = (float)dtMs / 1000.0f;
     tLast = t;
+
+    static int tLastFrame = 0;
+    double dtFrame = (t - tLastFrame) / 1000.0f;
+    if (dtFrame > globals.osd.frameRateInterval) {
+        globals.osd.frameRate = globals.osd.frames / dtFrame;
+        globals.osd.frames = 0;
+        tLastFrame = t;
+    }
 
     if (!globals.halt) {
         updatePlayer(&globals.player, dt, &globals.controls);
@@ -238,6 +320,7 @@ static void init() {
     initPlayer(&globals.player, &globals.drawingFlags);
     initLevel(&globals.level, &globals.drawingFlags);
     initCamera(&globals.camera);
+    initOSD(&globals.osd);
     globals.camera.pos = globals.player.pos;
     globals.camera.width = 800;
     globals.camera.height = 600;

@@ -5,6 +5,7 @@
 #include "controls.h"
 #include "mesh.h"
 #include "camera.h"
+#include "osd.h"
 
 /*
  * All of the global state for our main functions is declared here
@@ -16,4 +17,5 @@ typedef struct {
     Camera camera;
     DrawingFlags drawingFlags;
     bool halt;
+    OSD osd;
 } Globals;

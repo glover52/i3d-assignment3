@@ -1,4 +1,4 @@
-Assignment 2: Frogger
+Assignment 3: Frogger
 =====================
 
 > Submission by Adam Thalhammer (s3544305) && Kyle Glover (s3539870)

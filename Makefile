@@ -1,5 +1,5 @@
 
-BIN := i3d_assignment_3
+BIN := frogger
 
 CC := gcc
 LD := gcc

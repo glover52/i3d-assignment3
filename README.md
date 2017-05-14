@@ -17,11 +17,6 @@ Interactive 3D Graphics and Animation
 - [ ] Special effects when a frog is hit by a car, e.g. splattering (2D), using flattenedgeometry or exploding (3D) using a particle system.
 - [ ] Skybox.
 
-#### Legend
-- [ ] = Not Started
-- [-] = Started
-- [X] = Completed
-
 ### Compile and Run
     make
     ./frogger

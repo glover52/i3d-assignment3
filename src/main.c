@@ -87,7 +87,7 @@ static void update()
         globals.camera.pos = globals.player.pos;
 
         glutPostRedisplay();
-    };
+    }
 }
 
 static void keyDown(unsigned char key, int x, int y)
@@ -248,7 +248,7 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
     glutInitWindowSize(800, 600);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutCreateWindow("i3D Assignment 1");
+    glutCreateWindow("i3D Assignment 3");
 
     glutDisplayFunc(render);
     glutIdleFunc(update);

@@ -3,6 +3,7 @@
 #include "state.h"
 #include "player.h"
 #include "level.h"
+#include "osd.h"
 #include <string.h>
 
 Globals globals;
@@ -55,43 +56,53 @@ static void reshape(int width, int height) {
     applyProjectionMatrix(&globals.camera);
 }
 
-static void renderText(const char* text, const GLdouble *color, const GLint *pos) {
+static void renderText(const char* text, const GLdouble *color, int x, int y) {
     glColor3dv(color);
-    glRasterPos2iv(pos);
+    glRasterPos2i(x, y);
 
     for (size_t i = 0; i < strlen(text); i++) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, text[i]);
     }
 }
 
-static void renderScore(int score) {
-    const GLdouble red[] = {1.0, 0.0, 0.0};
-    const GLint pos[] = {10, 40};
+static void renderLives(int lives) {
+    const GLdouble white[] = { 1.0, 1.0, 1.0 };
+    int y = margin + line_height * 3;
     char buffer[40];
 
-    snprintf(buffer, sizeof buffer, "Score: %12d", score);
+    snprintf(buffer, sizeof buffer, "%d", lives);
+    renderText("Lives:", white, margin, y);
+    renderText(buffer, white, margin + col_width, y);
+}
 
-    renderText(buffer, red, pos);
+static void renderScore(int score) {
+    const GLdouble red[] = { 1.0, 0.0, 0.0 };
+    int y = margin + line_height * 2;
+    char buffer[40];
+
+    snprintf(buffer, sizeof buffer, "%d", score);
+    renderText("Score:", red, margin, y);
+    renderText(buffer, red, margin + col_width, y);
 }
 
 static void renderFrameRate(double frameRate) {
-    const GLdouble orange[] = {1.0, 0.7, 0.0};
-    const GLint pos[] = {10, 25};
+    const GLdouble orange[] = { 1.0, 0.7, 0.0 };
+    int y = margin + line_height * 1;
     char buffer[40];
 
-    snprintf(buffer, sizeof buffer, "Frame rate: %5.0f / s", frameRate);
-
-    renderText(buffer, orange, pos);
+    snprintf(buffer, sizeof buffer, "%.0f / s", frameRate);
+    renderText("Frame rate:", orange, margin, y);
+    renderText(buffer, orange, margin + col_width, y);
 }
 
 static void renderFramePeriod(double framePeriod) {
-    const GLdouble blue[] = {0.0, 1.0, 1.0};
-    const GLint pos[] = {10, 10};
+    const GLdouble blue[] = { 0.0, 1.0, 1.0 };
+    int y = margin + line_height * 0;
     char buffer[40];
 
-    snprintf(buffer, sizeof buffer, "Frame time: %5.0f ms", framePeriod);
-
-    renderText(buffer, blue, pos);
+    snprintf(buffer, sizeof buffer, "%.0f ms", framePeriod);
+    renderText("Frame time:", blue, margin, y);
+    renderText(buffer, blue, margin + col_width, y);
 }
 
 static void renderOSD(OSD *osd) {
@@ -114,6 +125,7 @@ static void renderOSD(OSD *osd) {
     glLoadIdentity();
 
     renderScore(osd->score);
+    renderLives(osd->lives);
     renderFrameRate(osd->frameRate);
     renderFramePeriod(1000.0 / osd->frameRate);
 

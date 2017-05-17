@@ -80,6 +80,16 @@ static void die() {
     globals.player.initPos = (Vec3f) { 0, 0, 4 };
 }
 
+static bool curiosityKilledTheCat() {
+    const double limit = 5.0;
+    Vec3f pos = globals.player.pos;
+    if (pos.x < -limit || pos.z < -limit || pos.x > limit || pos.z > limit) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 static void update() {
     static int tLast = -1;
 
@@ -115,6 +125,11 @@ static void update() {
     updatePlayer(&globals.player, dt, &globals.controls);
     updateLevel(&globals.level, dt);
     globals.camera.pos = globals.player.pos;
+
+    if (curiosityKilledTheCat()) {
+        die();
+    }
+
     glutPostRedisplay();
 }
 

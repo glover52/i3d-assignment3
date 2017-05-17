@@ -80,14 +80,25 @@ static void die() {
     globals.player.initPos = (Vec3f) { 0, 0, 4 };
 }
 
+static bool isTooCurious(float value, float low, float high) {
+    return value < low || value > high;
+}
+
+static bool isDrowning(Player* player, float low, float high) {
+    float value = player->pos.z;
+    return value > low && value < high && !player->jump
+        && player->pos.y <= 0.0;
+}
+
 static bool curiosityKilledTheCat() {
-    const double limit = 5.0;
     Vec3f pos = globals.player.pos;
-    if (pos.x < -limit || pos.z < -limit || pos.x > limit || pos.z > limit) {
-        return true;
-    } else {
-        return false;
-    }
+    float xlimit = globals.level.width / 2;
+    float zlimit = globals.level.height / 2;
+    float zriver = globals.level.river.pos.z;
+    float height = globals.level.river.laneHeight;
+    return isTooCurious(pos.x, -xlimit, xlimit)
+        || isTooCurious(pos.z, -zlimit, zlimit)
+        || isDrowning(&globals.player, zriver - height, zriver + height);
 }
 
 static void update() {
@@ -116,7 +127,7 @@ static void update() {
     if (globals.player.attachedTo == NULL) {
         Level level = globals.level;
         Entity *car = detectCollisions(&globals.player, level.road.enemies, level.road.numLanes);
-        if (car != NULL) {
+        if (car != NULL || curiosityKilledTheCat()) {
             die();
         }
         globals.player.attachedTo = detectCollisions(&globals.player, level.river.logs, level.river.numLanes);
@@ -125,11 +136,6 @@ static void update() {
     updatePlayer(&globals.player, dt, &globals.controls);
     updateLevel(&globals.level, dt);
     globals.camera.pos = globals.player.pos;
-
-    if (curiosityKilledTheCat()) {
-        die();
-    }
-
     glutPostRedisplay();
 }
 

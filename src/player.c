@@ -1,5 +1,6 @@
 #include "player.h"
 #include "gl.h"
+#include "state.h"
 
 #define ROT_AMOUNT (M_PI / 4.0) // amount that rotation will change each frame the controls are pressed
 #define SPEED_AMOUNT 1.0 // amount that speed will change each frame the controls are pressed
@@ -82,9 +83,10 @@ void updatePlayer(Player* player, float dt, Controls* controls) {
         if (controls->jump)
             player->jump = true;
 
-        // dont let the player jump backwards or into the floor
-        player->speed = max(0, player->speed);
+        // dont let the player jump backwards, into the floor or over entire map
+        player->speed = clamp(player->speed, 0, 2.75f);
         player->xRot = clamp(player->xRot, 0, M_PI);
+        player->yRot = clamp(player->yRot, M_PI * 0.5, M_PI + M_PI * 0.5);
 
         // set our initial velocity from speed and rotation
         player->initVel.x = cosf(player->xRot) * sinf(player->yRot);

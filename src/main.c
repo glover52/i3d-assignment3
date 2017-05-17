@@ -5,6 +5,8 @@
 #include "level.h"
 #include "osd.h"
 #include <string.h>
+#include "collision.h"
+#include <stdbool.h>
 
 Globals globals;
 
@@ -56,8 +58,7 @@ static void reshape(int width, int height) {
     applyProjectionMatrix(&globals.camera);
 }
 
-static void renderText(const char* text, const GLdouble *color, int x, int y) {
-    glColor3dv(color);
+static void renderText(const char* text, int x, int y) {
     glRasterPos2i(x, y);
 
     for (size_t i = 0; i < strlen(text); i++) {
@@ -66,43 +67,47 @@ static void renderText(const char* text, const GLdouble *color, int x, int y) {
 }
 
 static void renderLives(int lives) {
-    const GLdouble white[] = { 1.0, 1.0, 1.0 };
     int y = margin + line_height * 3;
     char buffer[40];
 
     snprintf(buffer, sizeof buffer, "%d", lives);
-    renderText("Lives:", white, margin, y);
-    renderText(buffer, white, margin + col_width, y);
+
+    submitColor(WHITE);
+    renderText("Lives:", margin, y);
+    renderText(buffer, margin + col_width, y);
 }
 
 static void renderScore(int score) {
-    const GLdouble red[] = { 1.0, 0.0, 0.0 };
     int y = margin + line_height * 2;
     char buffer[40];
 
     snprintf(buffer, sizeof buffer, "%d", score);
-    renderText("Score:", red, margin, y);
-    renderText(buffer, red, margin + col_width, y);
+
+    submitColor(RED);
+    renderText("Score:", margin, y);
+    renderText(buffer, margin + col_width, y);
 }
 
 static void renderFrameRate(double frameRate) {
-    const GLdouble orange[] = { 1.0, 0.7, 0.0 };
     int y = margin + line_height * 1;
     char buffer[40];
 
     snprintf(buffer, sizeof buffer, "%.0f / s", frameRate);
-    renderText("Frame rate:", orange, margin, y);
-    renderText(buffer, orange, margin + col_width, y);
+
+    submitColor(PURPLE);
+    renderText("Frame rate:", margin, y);
+    renderText(buffer, margin + col_width, y);
 }
 
 static void renderFramePeriod(double framePeriod) {
-    const GLdouble blue[] = { 0.0, 1.0, 1.0 };
     int y = margin + line_height * 0;
     char buffer[40];
 
     snprintf(buffer, sizeof buffer, "%.0f ms", framePeriod);
-    renderText("Frame time:", blue, margin, y);
-    renderText(buffer, blue, margin + col_width, y);
+
+    submitColor(CYAN);
+    renderText("Frame time:", margin, y);
+    renderText(buffer, margin + col_width, y);
 }
 
 static void renderOSD(OSD *osd) {
@@ -155,6 +160,23 @@ static void render()
     glutSwapBuffers();
 }
 
+static bool detectCollisions(Player *player, Entity* entities, size_t num_entities) {
+    for (size_t i = 0; i < num_entities; i++) {
+        Entity entity = entities[i];
+        Sphere playerSphere = { player->pos, player->size };
+        Sphere objectSphere = { entity.pos, player->size };
+
+        if (detectCollision(&playerSphere, &objectSphere)) {
+            printf("Detected a collision with %zu at (%.2f, %.2f, %.2f) and (%.2f, %.2f, %.2f)!\n",
+                    i,
+                    player->pos.x, player->pos.y, player->pos.z,
+                    entity.pos.x, entity.pos.y, entity.pos.z);
+            return true;
+        }
+    }
+    return false;
+}
+
 static void update()
 {
     static int tLast = -1;
@@ -176,10 +198,18 @@ static void update()
     }
 
     if (!globals.halt) {
+        double frog_dead = detectCollisions(&globals.player, globals.level.road.enemies, globals.level.road.numLanes);
+        if (frog_dead) {
+            globals.osd.lives--;
+            globals.player.jump = false;
+            globals.player.pos = (Vec3f) { 0, 0, 4 };
+            globals.player.initPos = (Vec3f) { 0, 0, 4 };
+        }
+        globals.player.onLog = detectCollisions(&globals.player, globals.level.river.logs, globals.level.river.numLanes);
+
         updatePlayer(&globals.player, dt, &globals.controls);
         updateLevel(&globals.level, dt);
         globals.camera.pos = globals.player.pos;
-
         glutPostRedisplay();
     }
 }

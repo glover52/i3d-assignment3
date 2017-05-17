@@ -15,6 +15,7 @@ typedef struct {
     bool jump;
     Mesh* mesh;
     Material material;
+    bool onLog;
 } Player;
 
 void initPlayer(Player* player, DrawingFlags* flags);

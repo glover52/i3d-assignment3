@@ -4,7 +4,7 @@
 /*
  * Initialize the road with all of the cars and the stuff we need to render them
  */
-static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLanes, Vec3f pos) {
+static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLanes, Vec3f pos, DrawingFlags* flags) {
     road->laneWidth = laneWidth;
     road->laneHeight = laneHeight;
     road->pos = pos;
@@ -32,6 +32,10 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
         enemy->size = (Vec3f) { 0.15, 0.1, 0.1 };
         ++enemy;
     }
+
+    road->terrainMesh = createPlane(laneWidth, laneHeight, flags->segments, flags->segments);
+    road->terrainMaterial = (Material) { { 0.7, 0.7, 0.7, 0 }, { 1, 1, 1, 0 }, { 0.8, 0.8, 0.8, 0 }, 90 };
+    road->terrainTexture = loadTexture("res/road.png");
 }
 
 /*
@@ -128,7 +132,18 @@ static void renderEntity(Entity* entity, Mesh* mesh, DrawingFlags* flags) {
 static void renderRoad(Road* road, DrawingFlags* flags) {
     glPushAttrib(GL_CURRENT_BIT | GL_LIGHTING_BIT);
 
+
+    glPushMatrix();
+    glTranslatef(road->pos.x, 0.001, road->pos.z + 0.775f);
+    glBindTexture(GL_TEXTURE_2D, road->terrainTexture);
+    applyMaterial(&road->terrainMaterial);
+    submitColor(GREY);
+    renderMesh(road->terrainMesh, flags);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+
     for (size_t i = 0; i < road->numLanes; ++i) {
+
         applyMaterial(&road->enemyMaterial);
         submitColor(RED);
         renderEntity(road->enemies + i, road->enemyMesh, flags);
@@ -192,10 +207,10 @@ void initLevel(Level* level, DrawingFlags* flags) {
     level->height = 10;
 
     level->terrainMesh = createPlane(level->width, level->height, flags->segments, flags->segments);
-
     level->terrainMaterial = (Material) { { 0.2, 0.2, 0.2, 0 }, { 0, 1, 0, 0 }, { 0.3, 0.3, 0.3, 0 }, 20 };
+    level->terrainTexture = loadTexture("res/grass.jpg");
 
-    initRoad(&level->road, level->width, 1.75, 8, (Vec3f) { 0, 0, 1 });
+    initRoad(&level->road, level->width, 1.75, 8, (Vec3f) { 0, 0, 1 }, flags);
     initRiver(&level->river, level->width, 1.75, 8, (Vec3f) { 0, 0, -3 }, flags);
 }
 
@@ -223,9 +238,11 @@ void renderLevel(Level* level, DrawingFlags* flags) {
     glPushAttrib(GL_CURRENT_BIT | GL_LIGHTING_BIT);
 
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, level->terrainTexture);
     applyMaterial(&level->terrainMaterial);
     submitColor(GREEN);
     renderMesh(level->terrainMesh, flags);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
 
     glPopAttrib();

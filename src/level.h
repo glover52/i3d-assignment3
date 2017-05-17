@@ -23,6 +23,9 @@ typedef struct {
     Entity* enemies;
     Mesh* enemyMesh;
     Material enemyMaterial;
+    Mesh* terrainMesh;
+    Material terrainMaterial;
+    unsigned int terrainTexture;
 } Road;
 
 /*
@@ -45,6 +48,7 @@ typedef struct {
     int width, height;
     Mesh* terrainMesh;
     Material terrainMaterial;
+    unsigned int terrainTexture;
     Road road;
     River river;
 } Level;

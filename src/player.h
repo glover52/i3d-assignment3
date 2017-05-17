@@ -4,6 +4,7 @@
 #include "controls.h"
 #include "mesh.h"
 #include "material.h"
+#include "level.h"
 
 /*
  * Our player has position and velocity, which are set from the speed and rotation parameters
@@ -15,7 +16,7 @@ typedef struct {
     bool jump;
     Mesh* mesh;
     Material material;
-    bool onLog;
+    Entity* attachedTo;
 } Player;
 
 void initPlayer(Player* player, DrawingFlags* flags);

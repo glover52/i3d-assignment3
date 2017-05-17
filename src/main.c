@@ -1,12 +1,13 @@
+#include <string.h>
+#include <stdbool.h>
+
 #include "gl.h"
 #include "util.h"
 #include "state.h"
 #include "player.h"
 #include "level.h"
 #include "osd.h"
-#include <string.h>
 #include "collision.h"
-#include <stdbool.h>
 
 Globals globals;
 
@@ -160,21 +161,21 @@ static void render()
     glutSwapBuffers();
 }
 
-static bool detectCollisions(Player *player, Entity* entities, size_t num_entities) {
+static Entity* detectCollisions(Player* player, Entity* entities, size_t num_entities) {
     for (size_t i = 0; i < num_entities; i++) {
-        Entity entity = entities[i];
+        Entity* entity = entities + i;
         Sphere playerSphere = { player->pos, player->size };
-        Sphere objectSphere = { entity.pos, player->size };
+        Sphere objectSphere = { entity->pos, player->size };
 
         if (detectCollision(&playerSphere, &objectSphere)) {
             printf("Detected a collision with %zu at (%.2f, %.2f, %.2f) and (%.2f, %.2f, %.2f)!\n",
                     i,
                     player->pos.x, player->pos.y, player->pos.z,
-                    entity.pos.x, entity.pos.y, entity.pos.z);
-            return true;
+                    entity->pos.x, entity->pos.y, entity->pos.z);
+            return entity;
         }
     }
-    return false;
+    return NULL;
 }
 
 static void update()
@@ -198,14 +199,17 @@ static void update()
     }
 
     if (!globals.halt) {
-        double frog_dead = detectCollisions(&globals.player, globals.level.road.enemies, globals.level.road.numLanes);
-        if (frog_dead) {
-            globals.osd.lives--;
-            globals.player.jump = false;
-            globals.player.pos = (Vec3f) { 0, 0, 4 };
-            globals.player.initPos = (Vec3f) { 0, 0, 4 };
+        if (globals.player.attachedTo == NULL) {
+            Level level = globals.level;
+            Entity *car = detectCollisions(&globals.player, level.road.enemies, level.road.numLanes);
+            if (car != NULL) {
+                globals.osd.lives--;
+                globals.player.jump = false;
+                globals.player.pos = (Vec3f) { 0, 0, 4 };
+                globals.player.initPos = (Vec3f) { 0, 0, 4 };
+            }
+            globals.player.attachedTo = detectCollisions(&globals.player, level.river.logs, level.river.numLanes);
         }
-        globals.player.onLog = detectCollisions(&globals.player, globals.level.river.logs, globals.level.river.numLanes);
 
         updatePlayer(&globals.player, dt, &globals.controls);
         updateLevel(&globals.level, dt);

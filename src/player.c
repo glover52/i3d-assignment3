@@ -38,7 +38,7 @@ void initPlayer(Player* player, DrawingFlags* flags) {
     player->size = 0.1;
     player->g = 9.8;
     player->jump = false;
-    player->onLog = false;
+    player->attachedTo = NULL;
 
     generatePlayerGeometry(player, flags->segments);
     player->material = (Material) { { 0.2, 0.2, 0.2, 0 }, { 0.1, 0.5, 0.9, 0 }, { 1, 1, 1, 0 }, 50 };
@@ -66,22 +66,37 @@ void generatePlayerGeometry(Player* player, size_t segments) {
  * If we aren't jumping, update speed and rotation from controls, otherwise animate the next step of our jump
  */
 void updatePlayer(Player* player, float dt, Controls* controls) {
+    if (player->attachedTo != NULL){
+        player->jump = false;
+        player->pos = addVec3f(player->attachedTo->pos, mulVec3f(player->attachedTo->vel, dt));
+        player->initPos = player->pos;
+        glutPostRedisplay();
+    }
     if (!player->jump) {
+
         // process controls
-        if (controls->up)
+        if (controls->up) {
             player->speed += SPEED_AMOUNT * dt;
-        if (controls->down)
+        }
+        if (controls->down) {
             player->speed -= SPEED_AMOUNT * dt;
-        if (controls->left)
+        }
+        if (controls->left) {
             player->xRot += ROT_AMOUNT * dt;
-        if (controls->right)
+        }
+        if (controls->right) {
             player->xRot -= ROT_AMOUNT * dt;
-        if (controls->turnLeft)
+        }
+        if (controls->turnLeft) {
             player->yRot += ROT_AMOUNT * dt;
-        if (controls->turnRight)
+        }
+        if (controls->turnRight) {
             player->yRot -= ROT_AMOUNT * dt;
-        if (controls->jump)
+        }
+        if (controls->jump) {
             player->jump = true;
+            player->attachedTo = NULL;
+        }
 
         // dont let the player jump backwards, into the floor or over entire map
         player->speed = clamp(player->speed, 0, 2.75f);
@@ -95,8 +110,7 @@ void updatePlayer(Player* player, float dt, Controls* controls) {
 
         player->initVel = mulVec3f(player->initVel, player->speed);
         player->vel = player->initVel;
-    }
-    else {
+    } else {
         integratePlayer(player, dt);
     }
 }

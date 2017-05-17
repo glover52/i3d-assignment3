@@ -11,3 +11,20 @@ bool detectCollision(Sphere *sphere1, Sphere *sphere2) {
 
     return d_2 < radius_sum * radius_sum;
 }
+
+Entity* detectCollisions(Player* player, Entity* entities, size_t num_entities) {
+    for (size_t i = 0; i < num_entities; i++) {
+        Entity* entity = entities + i;
+        Sphere playerSphere = { player->pos, player->size };
+        Sphere objectSphere = { entity->pos, player->size };
+
+        if (detectCollision(&playerSphere, &objectSphere)) {
+            printf("Detected a collision with %zu at (%.2f, %.2f, %.2f) and (%.2f, %.2f, %.2f)!\n",
+                    i,
+                    player->pos.x, player->pos.y, player->pos.z,
+                    entity->pos.x, entity->pos.y, entity->pos.z);
+            return entity;
+        }
+    }
+    return NULL;
+}

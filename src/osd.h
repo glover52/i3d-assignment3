@@ -9,7 +9,4 @@ typedef struct {
 } OSD;
 
 void initOSD(OSD* osd);
-
-extern const int margin;
-extern const int line_height;
-extern const int col_width;
+void renderOSD(OSD *osd);

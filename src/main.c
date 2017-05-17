@@ -16,10 +16,8 @@ static void cleanup() {
     destroyLevel(&globals.level);
 }
 
-static void updateKeyChar(unsigned char key, bool state)
-{
-    switch (key)
-    {
+static void updateKeyChar(unsigned char key, bool state) {
+    switch (key) {
         case 'w':
             globals.controls.up = state;
             break;
@@ -59,93 +57,7 @@ static void reshape(int width, int height) {
     applyProjectionMatrix(&globals.camera);
 }
 
-static void renderText(const char* text, int x, int y) {
-    glRasterPos2i(x, y);
-
-    for (size_t i = 0; i < strlen(text); i++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, text[i]);
-    }
-}
-
-static void renderLives(int lives) {
-    int y = margin + line_height * 3;
-    char buffer[40];
-
-    snprintf(buffer, sizeof buffer, "%d", lives);
-
-    submitColor(WHITE);
-    renderText("Lives:", margin, y);
-    renderText(buffer, margin + col_width, y);
-}
-
-static void renderScore(int score) {
-    int y = margin + line_height * 2;
-    char buffer[40];
-
-    snprintf(buffer, sizeof buffer, "%d", score);
-
-    submitColor(RED);
-    renderText("Score:", margin, y);
-    renderText(buffer, margin + col_width, y);
-}
-
-static void renderFrameRate(double frameRate) {
-    int y = margin + line_height * 1;
-    char buffer[40];
-
-    snprintf(buffer, sizeof buffer, "%.0f / s", frameRate);
-
-    submitColor(PURPLE);
-    renderText("Frame rate:", margin, y);
-    renderText(buffer, margin + col_width, y);
-}
-
-static void renderFramePeriod(double framePeriod) {
-    int y = margin + line_height * 0;
-    char buffer[40];
-
-    snprintf(buffer, sizeof buffer, "%.0f ms", framePeriod);
-
-    submitColor(CYAN);
-    renderText("Frame time:", margin, y);
-    renderText(buffer, margin + col_width, y);
-}
-
-static void renderOSD(OSD *osd) {
-    osd->frames++;
-
-    glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-
-    int width = glutGet(GLUT_WINDOW_WIDTH);
-    int height = glutGet(GLUT_WINDOW_HEIGHT);
-    glOrtho(0.0, width, 0.0, height, -1.0, 1.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    renderScore(osd->score);
-    renderLives(osd->lives);
-    renderFrameRate(osd->frameRate);
-    renderFramePeriod(1000.0 / osd->frameRate);
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-
-    glPopAttrib();
-}
-
-static void render()
-{
+static void render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     applyViewMatrix(&globals.camera);
@@ -178,8 +90,14 @@ static Entity* detectCollisions(Player* player, Entity* entities, size_t num_ent
     return NULL;
 }
 
-static void update()
-{
+static void die() {
+    globals.osd.lives--;
+    globals.player.jump = false;
+    globals.player.pos = (Vec3f) { 0, 0, 4 };
+    globals.player.initPos = (Vec3f) { 0, 0, 4 };
+}
+
+static void update() {
     static int tLast = -1;
 
     if (tLast < 0)
@@ -198,28 +116,26 @@ static void update()
         tLastFrame = t;
     }
 
-    if (!globals.halt) {
-        if (globals.player.attachedTo == NULL) {
-            Level level = globals.level;
-            Entity *car = detectCollisions(&globals.player, level.road.enemies, level.road.numLanes);
-            if (car != NULL) {
-                globals.osd.lives--;
-                globals.player.jump = false;
-                globals.player.pos = (Vec3f) { 0, 0, 4 };
-                globals.player.initPos = (Vec3f) { 0, 0, 4 };
-            }
-            globals.player.attachedTo = detectCollisions(&globals.player, level.river.logs, level.river.numLanes);
-        }
-
-        updatePlayer(&globals.player, dt, &globals.controls);
-        updateLevel(&globals.level, dt);
-        globals.camera.pos = globals.player.pos;
-        glutPostRedisplay();
+    if (globals.halt) {
+        return;
     }
+
+    if (globals.player.attachedTo == NULL) {
+        Level level = globals.level;
+        Entity *car = detectCollisions(&globals.player, level.road.enemies, level.road.numLanes);
+        if (car != NULL) {
+            die();
+        }
+        globals.player.attachedTo = detectCollisions(&globals.player, level.river.logs, level.river.numLanes);
+    }
+
+    updatePlayer(&globals.player, dt, &globals.controls);
+    updateLevel(&globals.level, dt);
+    globals.camera.pos = globals.player.pos;
+    glutPostRedisplay();
 }
 
-static void keyDown(unsigned char key, int x, int y)
-{
+static void keyDown(unsigned char key, int x, int y) {
     UNUSED(x);
     UNUSED(y);
 
@@ -285,16 +201,14 @@ static void keyDown(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-static void keyUp(unsigned char key, int x, int y)
-{
+static void keyUp(unsigned char key, int x, int y) {
     UNUSED(x);
     UNUSED(y);
 
     updateKeyChar(key, false);
 }
 
-static void specialKeyDown(int key, int x, int y)
-{
+static void specialKeyDown(int key, int x, int y) {
     UNUSED(x);
     UNUSED(y);
 
@@ -308,8 +222,7 @@ static void specialKeyDown(int key, int x, int y)
     glutPostRedisplay();
 }
 
-static void specialKeyUp(int key, int x, int y)
-{
+static void specialKeyUp(int key, int x, int y) {
     UNUSED(x);
     UNUSED(y);
 
@@ -372,8 +285,7 @@ static void init() {
     globals.camera.height = 600;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitWindowSize(800, 600);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);

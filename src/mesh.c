@@ -43,11 +43,11 @@ static unsigned int cubeIndices[] = {
  * Allocate the memory for a mesh with the specifed number of vertices and indices
  */
 Mesh* createMesh(size_t numVerts, size_t numIndices) {
-    Mesh* mesh = (Mesh*) malloc(sizeof(Mesh));
+    Mesh* mesh = malloc(sizeof(Mesh));
     mesh->numVerts = numVerts;
     mesh->numIndices = numIndices;
-    mesh->verts = (Vertex*) calloc(numVerts, sizeof(Vertex));
-    mesh->indices = (unsigned int*) calloc(numIndices, sizeof(int));
+    mesh->verts = calloc(numVerts, sizeof(Vertex));
+    mesh->indices = calloc(numIndices, sizeof(int));
     return mesh;
 }
 

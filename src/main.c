@@ -89,11 +89,15 @@ static bool isTooCurious(float value, float low, float high) {
 
 static bool isDrowning(Player* player, float low, float high) {
     float value = player->pos.z;
-    return value > low
+    bool drowning = value > low
         && value < high
         && !player->jump
         && player->attachedTo == NULL
         && player->pos.y < 0.1;
+    if (drowning) {
+        printf("Drowning at z=%.2f where %.2f<z<%.2f? %d\n", value, low, high, drowning);
+    }
+    return drowning;
 }
 
 static bool curiosityKilledTheCat() {
@@ -104,7 +108,7 @@ static bool curiosityKilledTheCat() {
     float height = globals.level.river.laneHeight;
     return isTooCurious(pos.x, -xlimit, xlimit)
         || isTooCurious(pos.z, -zlimit, zlimit)
-        || isDrowning(&globals.player, zriver - height, zriver + height);
+        || isDrowning(&globals.player, zriver, zriver + height);
 }
 
 static void handleCollisions() {

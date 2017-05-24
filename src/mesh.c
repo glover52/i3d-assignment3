@@ -152,10 +152,10 @@ Mesh* createPlane(float width, float height, size_t rows, size_t cols, bool isTe
             float y = (float)j /(float) rows * height - y0;
             size_t index = j * (cols + 1) + i;
 
-            // Create crevice for terrain
+            // Create crevice for river
             if (isTerrain) {
-                if (j > (rows / height) * 1 && j < (rows / height) * 3)
-                    mesh->verts[index].pos = (Vec3f) { x, -1, y };
+                if (j > (rows / height) * 2 && j < (rows / height) * 3)
+                    mesh->verts[index].pos = (Vec3f) { x, -0.5f, y };
 
                 else
                     mesh->verts[index].pos = (Vec3f) { x, 0, y };

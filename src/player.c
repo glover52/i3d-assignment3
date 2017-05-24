@@ -94,7 +94,7 @@ void updatePlayer(Player* player, float dt, Controls* controls) {
 
         // dont let the player jump backwards, into the floor or over entire map
         player->speed = clamp(player->speed, 0, 2.75f);
-        player->xRot = clamp(player->xRot, 0, (float) M_PI);
+        player->xRot = clamp(player->xRot, 0, (float) M_PI / 2.0f);
         player->yRot = clamp(player->yRot, (float) (M_PI * 0.5), (float) (M_PI + M_PI * 0.5));
 
         // set our initial velocity from speed and rotation

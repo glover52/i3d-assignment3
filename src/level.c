@@ -34,7 +34,7 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
     }
 
     road->terrainMesh = createPlane(laneWidth, laneHeight, flags->segments, flags->segments, false);
-    road->terrainMaterial = (Material) { { 0.7, 0.7, 0.7, 1 }, { 1, 1, 1, 1 }, { 0.8, 0.8, 0.8, 1 }, 90 };
+    road->terrainMaterial = (Material) { { 0.7, 0.7, 0.7, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 16 };
     road->terrainTexture = loadTexture("res/road.png");
 }
 
@@ -79,7 +79,7 @@ static void initRiver(River* river, float laneWidth, float laneHeight, size_t nu
 
     // Initialise the river
     river->riverMesh = createPlane(laneWidth, laneHeight, flags->segments, flags->segments, false);
-    river->riverMaterial = (Material) { { 1, 1, 1, RIVER_ALPHA }, { 1, 1, 1, RIVER_ALPHA }, { 0, 0, 1, RIVER_ALPHA }, 100 };
+    river->riverMaterial = (Material) { { 0.3, 0.3, 0.3, RIVER_ALPHA }, { 0, 1, 1, RIVER_ALPHA }, { 0.7, 0.7, 0.7, RIVER_ALPHA }, 92 };
     river->riverTexture = loadTexture("res/water.jpg");
 }
 
@@ -142,7 +142,7 @@ static void renderRoad(Road* road, DrawingFlags* flags) {
     glPushAttrib(GL_CURRENT_BIT | GL_LIGHTING_BIT);
 
     glPushMatrix();
-    glTranslatef(road->pos.x, 0.001, road->pos.z + 0.775f);
+    glTranslatef(road->pos.x, 0.0025, road->pos.z + 0.775f);
     glBindTexture(GL_TEXTURE_2D, road->terrainTexture);
     applyMaterial(&road->terrainMaterial);
     submitColor(GREY);
@@ -187,7 +187,7 @@ static void renderRiver(River* river, DrawingFlags* flags) {
 
     // River rendering
     glPushMatrix();
-    glTranslatef(river->pos.x, 0.001f, river->pos.z + 0.775f);
+    glTranslatef(river->pos.x, -0.0025f, river->pos.z + 0.775f);
     glBindTexture(GL_TEXTURE_2D, river->riverTexture);
     applyMaterial(&river->riverMaterial);
 //    submitColor(BLUE);
@@ -237,7 +237,7 @@ void initLevel(Level* level, DrawingFlags* flags) {
     level->height = 10;
 
     level->terrainMesh = createPlane(level->width, level->height, flags->segments, flags->segments, true);
-    level->terrainMaterial = (Material) { { 0.2, 0.2, 0.2, 1 }, { 0, 1, 0, 1 }, { 0.3, 0.3, 0.3, 1 }, 20 };
+    level->terrainMaterial = (Material) { { 0.2, 0.2, 0.2, 1 }, { 1, 1, 1, 1 }, { 0.3, 0.3, 0.3, 1 }, 20 };
     level->terrainTexture = loadTexture("res/grass.jpg");
 
     initRoad(&level->road, level->width, 1.75, 8, (Vec3f) { 0, 0, 1 }, flags);

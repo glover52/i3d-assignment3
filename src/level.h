@@ -4,6 +4,7 @@
 #include "mesh.h"
 #include "material.h"
 
+#define RIVER_ALPHA 0.8f
 /*
  * An object we can use to store the size, position and velocity of both the logs and cars in our game
  */
@@ -39,6 +40,12 @@ typedef struct {
     Mesh* logMesh;
     Material logMaterial;
     unsigned int logTexture;
+    Mesh* riverMesh;
+    Material riverMaterial;
+    unsigned int riverTexture;
+    Mesh* terrainMesh;
+    Material terrainMaterial;
+    unsigned int terrainTexture;
 } River;
 
 /*

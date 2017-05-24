@@ -65,6 +65,9 @@ static void render() {
     static float lightPos[] = { 1, 1, 1, 0 };
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
     renderPlayer(&globals.player, &globals.drawingFlags);
     renderLevel(&globals.level, &globals.drawingFlags);
 

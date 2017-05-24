@@ -74,6 +74,13 @@ void addLegs(Node* body) {
     body->next_level->current_level->current_level->current_level = create_tree(leg4);
 }
 
+void addHead(Node* body) {
+    Model* head = create_model(createCube());
+    head->scale = (Vec3f) {0.4, 0.3, 0.4};
+    head->translation = (Vec3f) {0.0, 0.7, 0.7};
+    body->current_level = create_tree(head);
+}
+
 /*
  * Generate the player mesh, or regenerate it if it already exists.
  * This should be called whenever the tesselation is increased or decreased
@@ -81,10 +88,9 @@ void addLegs(Node* body) {
 void generatePlayerGeometry(Player* player, size_t segments) {
     destroy_tree(player->tree);
     Model* body = create_model(createSphere(segments, segments));
-    Model* head = create_model(createCube());
     Node* tree = create_tree(body);
-    /* tree->current_level = create_tree(head); */
     addLegs(tree);
+    addHead(tree);
 
     player->tree = tree;
 }

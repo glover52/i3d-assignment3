@@ -86,8 +86,11 @@ static bool isTooCurious(float value, float low, float high) {
 
 static bool isDrowning(Player* player, float low, float high) {
     float value = player->pos.z;
-    return value > low && value < high && !player->jump
-        && player->pos.y <= 0.0;
+    return value > low
+        && value < high
+        && !player->jump
+        && player->attachedTo == NULL
+        && player->pos.y < 0.1;
 }
 
 static bool curiosityKilledTheCat() {
@@ -99,6 +102,24 @@ static bool curiosityKilledTheCat() {
     return isTooCurious(pos.x, -xlimit, xlimit)
         || isTooCurious(pos.z, -zlimit, zlimit)
         || isDrowning(&globals.player, zriver - height, zriver + height);
+}
+
+static void handleCollisions() {
+    if (globals.player.attachedTo == NULL) {
+        Level level = globals.level;
+        Entity *log = detectCollisions(&globals.player, level.river.logs, level.river.numLanes);
+        if (log != NULL && globals.player.pos.y > 0.1) {
+            puts("Attached to log!");
+            globals.player.attachedTo = log;
+        } else {
+            Entity *car = detectCollisions(&globals.player, level.road.enemies, level.road.numLanes);
+            bool offLimits = curiosityKilledTheCat();
+            if (car != NULL || offLimits) {
+                printf("off limits: %d, car: %d\n", offLimits, car != NULL);
+                die();
+            }
+        }
+    }
 }
 
 static void update() {
@@ -124,17 +145,10 @@ static void update() {
         return;
     }
 
-    if (globals.player.attachedTo == NULL) {
-        Level level = globals.level;
-        Entity *car = detectCollisions(&globals.player, level.road.enemies, level.road.numLanes);
-        if (car != NULL || curiosityKilledTheCat()) {
-            die();
-        }
-        globals.player.attachedTo = detectCollisions(&globals.player, level.river.logs, level.river.numLanes);
-    }
-
-    updatePlayer(&globals.player, dt, &globals.controls);
     updateLevel(&globals.level, dt);
+    handleCollisions();
+    updatePlayer(&globals.player, dt, &globals.controls);
+
     globals.camera.pos = globals.player.pos;
     glutPostRedisplay();
 }

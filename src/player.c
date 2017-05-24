@@ -66,12 +66,6 @@ void generatePlayerGeometry(Player* player, size_t segments) {
  * If we aren't jumping, update speed and rotation from controls, otherwise animate the next step of our jump
  */
 void updatePlayer(Player* player, float dt, Controls* controls) {
-    if (player->attachedTo != NULL){
-        player->jump = false;
-        player->pos = addVec3f(player->attachedTo->pos, mulVec3f(player->attachedTo->vel, dt));
-        player->initPos = player->pos;
-        glutPostRedisplay();
-    }
     if (!player->jump) {
 
         // process controls
@@ -112,6 +106,13 @@ void updatePlayer(Player* player, float dt, Controls* controls) {
         player->vel = player->initVel;
     } else {
         integratePlayer(player, dt);
+    }
+
+    if (player->attachedTo != NULL){
+        player->jump = false;
+        player->pos = addVec3f(player->attachedTo->pos, mulVec3f(player->attachedTo->vel, dt));
+        player->pos.y = player->attachedTo->pos.y + player->attachedTo->size.y;
+        player->initPos = player->pos;
     }
 }
 

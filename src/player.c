@@ -74,11 +74,26 @@ void addLegs(Node* body) {
     body->next_level->current_level->current_level->current_level = create_tree(leg4);
 }
 
-void addHead(Node* body) {
+void addHead(Node* body, size_t segments) {
     Model* head = create_model(createCube());
     head->scale = (Vec3f) {0.4, 0.3, 0.4};
     head->translation = (Vec3f) {0.0, 0.7, 0.7};
-    body->current_level = create_tree(head);
+    Node* headAssemply = create_tree(head);
+
+    Model* eye1 = create_model(createCylinder(segments, segments, 0.3));
+    eye1->translation = (Vec3f) {-0.5, 0.8, 1.0};
+    eye1->rotation = (Vec3f) {1.0, 0.2, 0.0};
+    eye1->angle = -30;
+
+    Model* eye2 = create_model(createCylinder(segments, segments, 0.3));
+    eye2->translation = (Vec3f) {0.5, 0.8, 1.0};
+    eye2->rotation = (Vec3f) {1.0, -0.2, 0.0};
+    eye2->angle = -30;
+
+    headAssemply->next_level = create_tree(eye1);
+    headAssemply->next_level->current_level = create_tree(eye2);
+
+    body->current_level = headAssemply;
 }
 
 /*
@@ -90,7 +105,7 @@ void generatePlayerGeometry(Player* player, size_t segments) {
     Model* body = create_model(createSphere(segments, segments));
     Node* tree = create_tree(body);
     addLegs(tree);
-    addHead(tree);
+    addHead(tree, segments);
 
     player->tree = tree;
 }

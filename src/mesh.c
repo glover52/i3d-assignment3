@@ -140,7 +140,7 @@ Mesh* createCube() {
 /*
  * Create a plane with row x cols number of quads.
  */
-Mesh* createPlane(float width, float height, size_t rows, size_t cols) {
+Mesh* createPlane(float width, float height, size_t rows, size_t cols, bool isTerrain) {
     float x0 = 0.5 * width;
     float y0 = 0.5 * height;
     Mesh* mesh = createMesh((rows + 1) * (cols + 1), (rows ) * (cols )  * 6);
@@ -151,7 +151,20 @@ Mesh* createPlane(float width, float height, size_t rows, size_t cols) {
         for (size_t j = 0; j <= rows; ++j) {
             float y = (float)j /(float) rows * height - y0;
             size_t index = j * (cols + 1) + i;
-            mesh->verts[index].pos = (Vec3f) { x, 0, y };
+
+            // Create crevice for terrain
+            if (isTerrain) {
+                if (j > (rows / height) * 1 && j < (rows / height) * 3)
+                    mesh->verts[index].pos = (Vec3f) { x, -1, y };
+
+                else
+                    mesh->verts[index].pos = (Vec3f) { x, 0, y };
+            }
+
+            else
+                mesh->verts[index].pos = (Vec3f) { x, 0, y };
+
+            // mesh->verts[index].pos = (Vec3f) { x, 0, y };
             mesh->verts[index].normal.y = 1.0;
             mesh->verts[index].tc.x = (float) i / (float) cols;
             mesh->verts[index].tc.y = (float) j / (float) rows;

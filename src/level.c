@@ -33,7 +33,7 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
         ++enemy;
     }
 
-    road->terrainMesh = createPlane(laneWidth, laneHeight, flags->segments, flags->segments);
+    road->terrainMesh = createPlane(laneWidth, laneHeight, flags->segments, flags->segments, false);
     road->terrainMaterial = (Material) { { 0.7, 0.7, 0.7, 0 }, { 1, 1, 1, 0 }, { 0.8, 0.8, 0.8, 0 }, 90 };
     road->terrainTexture = loadTexture("res/road.png");
 }
@@ -195,7 +195,7 @@ void generateLevelGeometry(Level* level, size_t segments) {
     if (level->river.logMesh)
         destroyMesh(level->river.logMesh);
 
-    level->terrainMesh = createPlane(level->width, level->height, segments, segments);
+    level->terrainMesh = createPlane(level->width, level->height, segments, segments, true);
     level->river.logMesh = createCylinder(segments, segments, 1);
 }
 
@@ -206,7 +206,7 @@ void initLevel(Level* level, DrawingFlags* flags) {
     level->width = 10;
     level->height = 10;
 
-    level->terrainMesh = createPlane(level->width, level->height, flags->segments, flags->segments);
+    level->terrainMesh = createPlane(level->width, level->height, flags->segments, flags->segments, true);
     level->terrainMaterial = (Material) { { 0.2, 0.2, 0.2, 0 }, { 0, 1, 0, 0 }, { 0.3, 0.3, 0.3, 0 }, 20 };
     level->terrainTexture = loadTexture("res/grass.jpg");
 

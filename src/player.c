@@ -1,6 +1,7 @@
 #include "player.h"
 #include "gl.h"
 #include "state.h"
+#include "tree.h"
 
 #define ROT_AMOUNT (M_PI / 4.0) // amount that rotation will change each frame the controls are pressed
 #define SPEED_AMOUNT 1.0 // amount that speed will change each frame the controls are pressed
@@ -48,7 +49,29 @@ void initPlayer(Player* player, DrawingFlags* flags) {
  * Cleanup any memory used by the player
  */
 void destroyPlayer(Player* player) {
-    destroyMesh(player->mesh);
+    destroy_tree(player->tree);
+}
+
+Model* createLeg(double x, double z, double rot) {
+    Model* leg = create_model(createCube());
+    leg->translation = (Vec3f) { x, 0, z};
+    leg->scale = (Vec3f) { 0.3, 0.3, 0.3};
+    leg->rotation = (Vec3f) { 0.0, 1.0, 0.0};
+    leg->angle = rot;
+    return leg;
+}
+
+void addLegs(Node* body) {
+    Model* leg1 = createLeg(0.7, 0.7, -45.0);
+    Model* leg2 = createLeg(-0.7, -0.7, -45.0);
+    Model* leg3 = createLeg(0.7, -0.7, -45.0);
+    Model* leg4 = createLeg(-0.7, 0.7, -45.0);
+
+    body->next_level = create_tree(leg1);
+    body->next_level->current_level = create_tree(leg2);
+    body->next_level->current_level = create_tree(leg2);
+    body->next_level->current_level->current_level = create_tree(leg3);
+    body->next_level->current_level->current_level->current_level = create_tree(leg4);
 }
 
 /*
@@ -56,9 +79,14 @@ void destroyPlayer(Player* player) {
  * This should be called whenever the tesselation is increased or decreased
  */
 void generatePlayerGeometry(Player* player, size_t segments) {
-    if (player->mesh)
-        destroyMesh(player->mesh);
-    player->mesh = createSphere(segments, segments);
+    destroy_tree(player->tree);
+    Model* body = create_model(createSphere(segments, segments));
+    Model* head = create_model(createCube());
+    Node* tree = create_tree(body);
+    /* tree->current_level = create_tree(head); */
+    addLegs(tree);
+
+    player->tree = tree;
 }
 
 /*
@@ -137,7 +165,7 @@ void renderPlayer(Player* player, DrawingFlags* flags) {
     glScalef(player->size, player->size, player->size);
     applyMaterial(&player->material);
     glColor3f(0.1, 0.5, 0.9);
-    renderMesh(player->mesh, flags);
+    render_tree(player->tree, flags);
     glPopMatrix();
 
     // draw the visualization of the player's velocity at our current position

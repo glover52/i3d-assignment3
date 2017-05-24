@@ -5,6 +5,7 @@
 #include "mesh.h"
 #include "material.h"
 #include "level.h"
+#include "tree.h"
 
 /*
  * Our player has position and velocity, which are set from the speed and rotation parameters
@@ -14,7 +15,7 @@ typedef struct {
     Vec3f pos, vel, initPos, initVel;
     float speed, xRot, yRot, size, g;
     bool jump;
-    Mesh* mesh;
+    Node* tree;
     Material material;
     Entity* attachedTo;
 } Player;

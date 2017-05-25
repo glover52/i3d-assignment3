@@ -105,35 +105,30 @@ static void initSkybox(Skybox* skybox, float width, float height, float length) 
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 0, 0, 0 };
     wall->wallTexture = loadTexture("res/skybox/negx.jpg");
-
     wall++;
 
     wall->size = (Vec3f) {width, height, length};
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 90, 0, 0 };
     wall->wallTexture = loadTexture("res/skybox/negy.jpg");
-
     wall++;
 
     wall->size = (Vec3f) {width, height, length};
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 180, 0, 180 };
     wall->wallTexture = loadTexture("res/skybox/posx.jpg");
-
     wall++;
 
     wall->size = (Vec3f) {width, height, length};
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { -90, 0, 90 };
     wall->wallTexture = loadTexture("res/skybox/posy.jpg");
-
     wall++;
 
     wall->size = (Vec3f) {width, height, length};
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 0, 90, 0 };
     wall->wallTexture = loadTexture("res/skybox/posz.jpg");
-
     wall++;
 
     wall->size = (Vec3f) {width, height, length};
@@ -298,6 +293,7 @@ static void renderSkybox(Skybox* skybox, DrawingFlags* flags) {
 static void destroyRoad(Road* road) {
     free(road->enemies);
     destroyMesh(road->enemyMesh);
+    destroyMesh(road->terrainMesh);
 }
 
 /*
@@ -306,6 +302,16 @@ static void destroyRoad(Road* road) {
 static void destroyRiver(River* river) {
     free(river->logs);
     destroyMesh(river->logMesh);
+    destroyMesh(river->terrainMesh);
+    destroyMesh(river->riverMesh);
+}
+
+/*
+ * Cleanup the memory used by the skybox
+ */
+static void destroySkybox(Skybox* skybox) {
+    free(skybox->walls);
+    destroyMesh(skybox->wallMesh);
 }
 
 /*
@@ -344,6 +350,7 @@ void initLevel(Level* level, DrawingFlags* flags) {
 void destroyLevel(Level* level) {
     destroyRoad(&level->road);
     destroyRiver(&level->river);
+    destroySkybox(&level->skybox);
     destroyMesh(level->terrainMesh);
 }
 

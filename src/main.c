@@ -297,7 +297,7 @@ static void init() {
     glEnable(GL_LIGHT0);
     glEnable(GL_NORMALIZE);
 
-    globals.drawingFlags.segments = 8;
+    globals.drawingFlags.segments = 16;
     globals.drawingFlags.wireframe = false;
     globals.drawingFlags.textures = true;
     globals.drawingFlags.lighting = true;

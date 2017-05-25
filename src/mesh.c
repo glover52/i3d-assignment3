@@ -77,6 +77,7 @@ void renderMesh(Mesh* mesh, DrawingFlags* flags) {
     if (flags->textures)
         glEnable(GL_TEXTURE_2D);
 
+
     // you can use vertex arrays to send the vertices to the GPU all at once
     // this way using glVertexPointer is still deprecated, but it's closer to how you do this in modern GL
     // if you want you could try using VBOs, otherwise you'll learn how later in Realtime Rendering
@@ -138,6 +139,18 @@ Mesh* createCube() {
 }
 
 /*
+ * Create a wall using a reduced version of a quad
+ * Probably would be wiser to refactor createCube but harder
+ * due to some time constraints. Maybe later!
+ */
+Mesh* createWall() {
+    Mesh* mesh = createMesh(4, 12);
+    memcpy(mesh->verts, cubeVerts, 4 * sizeof(Vertex));
+    memcpy(mesh->indices, cubeIndices, 12 * sizeof(unsigned int));
+    return mesh;
+}
+
+/*
  * Create a plane with row x cols number of quads.
  */
 Mesh* createPlane(float width, float height, size_t rows, size_t cols, bool isTerrain) {
@@ -154,7 +167,7 @@ Mesh* createPlane(float width, float height, size_t rows, size_t cols, bool isTe
 
             // Create crevice for river
             if (isTerrain) {
-                if (j > (rows / width) * 2 && j < (rows / width) * 3.5)
+                if (j > (cols / width) * 2 && j < (cols / width) * 3.5)
                     mesh->verts[index].pos = (Vec3f) { x, -0.5f, y };
 
                 else

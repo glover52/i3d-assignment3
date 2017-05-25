@@ -84,6 +84,65 @@ static void initRiver(River* river, float laneWidth, float laneHeight, size_t nu
 }
 
 /*
+ * Initialise the Skybox including loading all the texture for the specific
+ * meshes. The initialisation is similar to that of creating a new Entity.
+ * This needs a serious trim, probably by using a loop, but time is very tight
+ * at the moment.
+ */
+static void initSkybox(Skybox* skybox, float width, float height, float length) {
+    skybox->width = width;
+    skybox->height = height;
+    skybox->length = length;
+
+    skybox->wallMesh = createWall();
+    skybox->wallMaterial = (Material) { { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 0 };
+
+    // allocate and initialize all of our objects
+    skybox->walls = (Wall*) calloc(6, sizeof(Wall));
+    Wall* wall = skybox->walls;
+
+    wall->size = (Vec3f) {width, height, length};
+    wall->pos = skybox->pos;
+    wall->rot = (Vec3f) { 0, 0, 0 };
+    wall->wallTexture = loadTexture("res/skybox/negx.jpg");
+
+    wall++;
+
+    wall->size = (Vec3f) {width, height, length};
+    wall->pos = skybox->pos;
+    wall->rot = (Vec3f) { 90, 0, 0 };
+    wall->wallTexture = loadTexture("res/skybox/negy.jpg");
+
+    wall++;
+
+    wall->size = (Vec3f) {width, height, length};
+    wall->pos = skybox->pos;
+    wall->rot = (Vec3f) { 180, 0, 180 };
+    wall->wallTexture = loadTexture("res/skybox/posx.jpg");
+
+    wall++;
+
+    wall->size = (Vec3f) {width, height, length};
+    wall->pos = skybox->pos;
+    wall->rot = (Vec3f) { -90, 0, 90 };
+    wall->wallTexture = loadTexture("res/skybox/posy.jpg");
+
+    wall++;
+
+    wall->size = (Vec3f) {width, height, length};
+    wall->pos = skybox->pos;
+    wall->rot = (Vec3f) { 0, 90, 0 };
+    wall->wallTexture = loadTexture("res/skybox/posz.jpg");
+
+    wall++;
+
+    wall->size = (Vec3f) {width, height, length};
+    wall->pos = skybox->pos;
+    wall->rot = (Vec3f) { 0, -90, 0 };
+    wall->wallTexture = loadTexture("res/skybox/negz.jpg");
+}
+
+/*
  * Update an entity's position each frame and make sure it stays in the bounds specified
  */
 static void updateEntity(Entity* entity, float minX, float maxX, float dt) {
@@ -132,6 +191,24 @@ static void renderEntity(Entity* entity, Mesh* mesh, DrawingFlags* flags) {
     glRotatef(entity->rot.y, 0, 1, 0);
     glScalef(entity->size.x, entity->size.y, entity->size.z);
     renderMesh(mesh, flags);
+    glPopMatrix();
+}
+
+/*
+ * Render a wall object with the provided mesh and wall variables to create an illusion of an area
+ */
+static void renderWall(Wall* wall, Mesh* mesh, DrawingFlags* flags) {
+    glPushMatrix();
+    glTranslatef(wall->pos.x, wall->pos.y, wall->pos.z);
+    glRotatef(wall->rot.x, 1, 0, 0);
+    glRotatef(wall->rot.y, 0, 1, 0);
+    glRotatef(wall->rot.z, 0, 0, 1);
+    glScalef(wall->size.x, wall->size.y, wall->size.z);
+    glBindTexture(GL_TEXTURE_2D, wall->wallTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    renderMesh(mesh, flags);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
 }
 
@@ -190,11 +267,27 @@ static void renderRiver(River* river, DrawingFlags* flags) {
     glTranslatef(river->pos.x, -0.0025f, river->pos.z + 0.775f);
     glBindTexture(GL_TEXTURE_2D, river->riverTexture);
     applyMaterial(&river->riverMaterial);
-//    submitColor(BLUE);
     glColor4f(0, 1, 1, RIVER_ALPHA);
     renderMesh(river->riverMesh, flags);
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
+
+    glPopAttrib();
+}
+
+/*
+ * Render skybox
+ */
+static void renderSkybox(Skybox* skybox, DrawingFlags* flags) {
+    glPushAttrib(GL_CURRENT_BIT | GL_LIGHTING_BIT);
+
+    for(size_t i = 0; i < 6; ++i) {
+        applyMaterial(&skybox->wallMaterial);
+        submitColor(WHITE);
+
+        Wall* wall = skybox->walls + i;
+        renderWall(wall, skybox->wallMesh, flags);
+    }
 
     glPopAttrib();
 }
@@ -240,6 +333,7 @@ void initLevel(Level* level, DrawingFlags* flags) {
     level->terrainMaterial = (Material) { { 0.2, 0.2, 0.2, 1 }, { 1, 1, 1, 1 }, { 0.3, 0.3, 0.3, 1 }, 20 };
     level->terrainTexture = loadTexture("res/grass.jpg");
 
+    initSkybox(&level->skybox, level->width * 10, 100, level->height * 10);
     initRoad(&level->road, level->width, 1.75, 8, (Vec3f) { 0, 0, 1 }, flags);
     initRiver(&level->river, level->width, 1.75, 8, (Vec3f) { 0, 0, -3 }, flags);
 }
@@ -277,6 +371,7 @@ void renderLevel(Level* level, DrawingFlags* flags) {
 
     glPopAttrib();
 
+    renderSkybox(&level->skybox, flags);
     renderRoad(&level->road, flags);
     renderRiver(&level->river, flags);
 }

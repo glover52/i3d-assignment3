@@ -34,6 +34,7 @@ const Vec3f YELLOW;
 const Vec3f CYAN;
 const Vec3f PURPLE;
 const Vec3f GREY;
+const Vec3f BLACK;
 
 float getRand();
 float getNRand();

@@ -11,7 +11,7 @@ OBJ_DIR := obj
 
 
 CFLAGS := -Wall -Wextra -std=c11 -g -I$(SRC_DIR) -I inc
-LDFLAGS =
+LDFLAGS = -g
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)

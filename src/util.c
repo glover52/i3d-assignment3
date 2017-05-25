@@ -14,6 +14,7 @@ const Vec3f YELLOW = { 1.0, 1.0, 0.0 };
 const Vec3f CYAN = { 0.0, 1.0, 1.0 };
 const Vec3f PURPLE = { 1.0, 0.0, 1.0 };
 const Vec3f GREY = { 0.33, 0.33, 0.33 };
+const Vec3f BLACK = { 0.0, 0.0, 0.0 };
 
 // some handy funcitons for getting random values
 float getRand() {

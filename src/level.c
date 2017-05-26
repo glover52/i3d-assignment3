@@ -98,44 +98,38 @@ static void initSkybox(Skybox* skybox, float width, float height, float length) 
     skybox->wallMaterial = (Material) { { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 0 };
 
     // allocate and initialize all of our objects
-    skybox->walls = calloc(6, sizeof(Wall));
+    skybox->walls = calloc(5, sizeof(Wall));
     Wall* wall = skybox->walls;
     Vec3f size = {width, height, length};
 
     wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 0, 0, 0 };
-    wall->wallTexture = loadTexture("res/skybox/negx.jpg");
-    wall++;
-
-    wall->size = size;
-    wall->pos = skybox->pos;
-    wall->rot = (Vec3f) { 90, 0, 0 };
-    wall->wallTexture = loadTexture("res/skybox/negx.jpg");
-    wall++;
-
-    wall->size = size;
-    wall->pos = skybox->pos;
-    wall->rot = (Vec3f) { 180, 0, 180 };
     wall->wallTexture = loadTexture("res/skybox/posx.jpg");
     wall++;
 
     wall->size = size;
     wall->pos = skybox->pos;
-    wall->rot = (Vec3f) { -90, 0, 90 };
-    wall->wallTexture = loadTexture("res/skybox/posy.jpg");
+    wall->rot = (Vec3f) { 0, 90, 0 };
+    wall->wallTexture = loadTexture("res/skybox/negz.jpg");
     wall++;
 
     wall->size = size;
     wall->pos = skybox->pos;
-    wall->rot = (Vec3f) { 0, 90, 0 };
-    wall->wallTexture = loadTexture("res/skybox/posz.jpg");
+    wall->rot = (Vec3f) { 0, 180, 0 };
+    wall->wallTexture = loadTexture("res/skybox/negx.jpg");
     wall++;
 
     wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 0, -90, 0 };
-    wall->wallTexture = loadTexture("res/skybox/negz.jpg");
+    wall->wallTexture = loadTexture("res/skybox/posz.jpg");
+    wall++;
+
+    wall->size = size;
+    wall->pos = skybox->pos;
+    wall->rot = (Vec3f) { -90, 0, -90 };
+    wall->wallTexture = loadTexture("res/skybox/posy.jpg");
 }
 
 /*
@@ -280,7 +274,7 @@ static void renderRiver(River* river, DrawingFlags* flags) {
 static void renderSkybox(Skybox* skybox, DrawingFlags* flags) {
     glPushAttrib(GL_CURRENT_BIT | GL_LIGHTING_BIT);
 
-    for(size_t i = 0; i < 6; ++i) {
+    for(size_t i = 0; i < 5; ++i) {
         applyMaterial(&skybox->wallMaterial);
         submitColor(WHITE);
 
@@ -382,7 +376,7 @@ void renderLevel(Level* level, DrawingFlags* flags) {
 
     glPopAttrib();
 
-    renderSkybox(&level->skybox, flags);
     renderRoad(&level->road, flags);
     renderRiver(&level->river, flags);
+    renderSkybox(&level->skybox, flags);
 }

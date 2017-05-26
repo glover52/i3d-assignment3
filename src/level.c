@@ -98,40 +98,41 @@ static void initSkybox(Skybox* skybox, float width, float height, float length) 
     skybox->wallMaterial = (Material) { { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 0 };
 
     // allocate and initialize all of our objects
-    skybox->walls = (Wall*) calloc(6, sizeof(Wall));
+    skybox->walls = calloc(6, sizeof(Wall));
     Wall* wall = skybox->walls;
+    Vec3f size = {width, height, length};
 
-    wall->size = (Vec3f) {width, height, length};
+    wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 0, 0, 0 };
     wall->wallTexture = loadTexture("res/skybox/negx.jpg");
     wall++;
 
-    wall->size = (Vec3f) {width, height, length};
+    wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 90, 0, 0 };
-    wall->wallTexture = loadTexture("res/skybox/negy.jpg");
+    wall->wallTexture = loadTexture("res/skybox/negx.jpg");
     wall++;
 
-    wall->size = (Vec3f) {width, height, length};
+    wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 180, 0, 180 };
     wall->wallTexture = loadTexture("res/skybox/posx.jpg");
     wall++;
 
-    wall->size = (Vec3f) {width, height, length};
+    wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { -90, 0, 90 };
     wall->wallTexture = loadTexture("res/skybox/posy.jpg");
     wall++;
 
-    wall->size = (Vec3f) {width, height, length};
+    wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 0, 90, 0 };
     wall->wallTexture = loadTexture("res/skybox/posz.jpg");
     wall++;
 
-    wall->size = (Vec3f) {width, height, length};
+    wall->size = size;
     wall->pos = skybox->pos;
     wall->rot = (Vec3f) { 0, -90, 0 };
     wall->wallTexture = loadTexture("res/skybox/negz.jpg");

@@ -203,7 +203,10 @@ static void renderWall(Wall* wall, Mesh* mesh, DrawingFlags* flags) {
     glBindTexture(GL_TEXTURE_2D, wall->wallTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    bool lighting = flags->lighting;
+    flags->lighting = false;
     renderMesh(mesh, flags);
+    flags->lighting = lighting;
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
 }

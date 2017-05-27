@@ -3,6 +3,7 @@
 #include "util.h"
 #include "mesh.h"
 #include "material.h"
+#include "tree.h"
 
 #define RIVER_ALPHA 0.8f
 /*
@@ -22,7 +23,7 @@ typedef struct {
     float laneWidth, laneHeight;
     Vec3f pos;
     Entity* enemies;
-    Mesh* enemyMesh;
+    Node* enemyTree;
     Material enemyMaterial;
     Mesh* terrainMesh;
     Material terrainMaterial;
@@ -37,7 +38,7 @@ typedef struct {
     float laneWidth, laneHeight;
     Vec3f pos;
     Entity* logs;
-    Mesh* logMesh;
+    Node* logTree;
     Material logMaterial;
     unsigned int logTexture;
     Mesh* riverMesh;

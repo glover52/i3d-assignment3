@@ -1,5 +1,6 @@
 #include "level.h"
 #include "gl.h"
+#include "tree.h"
 
 /*
  * Initialize the road with all of the cars and the stuff we need to render them
@@ -10,7 +11,7 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
     road->pos = pos;
     road->numLanes = numLanes;
 
-    road->enemyMesh = createCube();
+    road->enemyTree = create_tree(create_model(createCube()));
     road->enemyMaterial = (Material) { { 0.2, 0.2, 0.2, 1 }, { 1, 0, 0, 1 }, { 1, 1, 1, 1 }, 50 };
 
     // allocate and initialize all of our objects
@@ -47,7 +48,7 @@ static void initRiver(River* river, float laneWidth, float laneHeight, size_t nu
     river->pos = pos;
     river->numLanes = numLanes;
 
-    river->logMesh = createCylinder(flags->segments, flags->segments, 1);
+    river->logTree = create_tree(create_model(createCylinder(flags->segments, flags->segments, 1)));
     river->logMaterial = (Material) { { 0.2, 0.2, 0.2, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 40 };
     river->logTexture = loadTexture("res/wood.jpg");
 
@@ -126,13 +127,13 @@ static void updateRiver(River* river, float dt) {
 /*
  * Render either a car or log object with the provided mesh
  */
-static void renderEntity(Entity* entity, Mesh* mesh, DrawingFlags* flags) {
+static void renderEntity(Entity* entity, Node* tree, DrawingFlags* flags) {
     glPushMatrix();
     glTranslatef(entity->pos.x, entity->pos.y, entity->pos.z);
     glRotatef(entity->rot.x, 1, 0, 0);
     glRotatef(entity->rot.y, 0, 1, 0);
     glScalef(entity->size.x, entity->size.y, entity->size.z);
-    renderMesh(mesh, flags);
+    render_tree(tree, flags);
     glPopMatrix();
 }
 
@@ -157,7 +158,7 @@ static void renderRoad(Road* road, DrawingFlags* flags) {
 
         applyMaterial(&road->enemyMaterial);
         submitColor(RED);
-        renderEntity(road->enemies + i, road->enemyMesh, flags);
+        renderEntity(road->enemies + i, road->enemyTree, flags);
     }
 
     glPopAttrib();
@@ -174,7 +175,7 @@ static void renderRiver(River* river, DrawingFlags* flags) {
         glBindTexture(GL_TEXTURE_2D, river->logTexture);
         applyMaterial(&river->logMaterial);
         glColor3f(0.65, 0.15, 0.15);
-        renderEntity(river->logs + i, river->logMesh, flags);
+        renderEntity(river->logs + i, river->logTree, flags);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -208,7 +209,7 @@ static void renderRiver(River* river, DrawingFlags* flags) {
  */
 static void destroyRoad(Road* road) {
     free(road->enemies);
-    destroyMesh(road->enemyMesh);
+    destroy_tree(road->enemyTree);
     destroyMesh(road->terrainMesh);
 }
 
@@ -217,7 +218,7 @@ static void destroyRoad(Road* road) {
  */
 static void destroyRiver(River* river) {
     free(river->logs);
-    destroyMesh(river->logMesh);
+    destroy_tree(river->logTree);
     destroyMesh(river->terrainMesh);
     destroyMesh(river->riverMesh);
 }
@@ -229,11 +230,11 @@ static void destroyRiver(River* river) {
 void generateLevelGeometry(Level* level, size_t segments) {
     if (level->terrainMesh)
         destroyMesh(level->terrainMesh);
-    if (level->river.logMesh)
-        destroyMesh(level->river.logMesh);
+    if (level->river.logTree)
+        destroy_tree(level->river.logTree);
 
     level->terrainMesh = createPlane(level->width, level->height, segments, segments, true);
-    level->river.logMesh = createCylinder(segments, segments, 1);
+    level->river.logTree = create_tree(create_model(createCylinder(segments, segments, 1)));
 }
 
 /*

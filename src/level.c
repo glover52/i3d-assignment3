@@ -27,6 +27,7 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
     road->numLanes = numLanes;
 
     road->enemyTree = create_tree(create_model(createCube()));
+    road->enemyTree->model->scale = (Vec3f) {0.8, 0.8, 0.7};
 
     Model* wheel1 = createWheel(1.0, 1.2, flags);
     Model* wheel2 = createWheel(-1.0, -1.2, flags);
@@ -68,6 +69,15 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
     road->terrainTexture = loadTexture("res/road.png");
 }
 
+static Model* createTwig(double x, int angle, DrawingFlags* flags) {
+    Model* twig = create_model(createCylinder(flags->segments, flags->segments, 1));
+    twig->translation = (Vec3f) { x, 0.5, x};
+    twig->scale = (Vec3f) { 0.9, 0.05, 0.03};
+    twig->rotation = (Vec3f) { 0.5, 0.5, -0.5};
+    twig->angle = angle;
+    return twig;
+}
+
 /*
  * Same as above but for our river and logs
  */
@@ -77,7 +87,9 @@ static void initRiver(River* river, float laneWidth, float laneHeight, size_t nu
     river->pos = pos;
     river->numLanes = numLanes;
 
-    river->logTree = create_tree(create_model(createCylinder(flags->segments, flags->segments, 1)));
+    river->logTree = create_tree(create_model(createCylinder(flags->segments, flags->segments, 0.8)));
+    river->logTree->next_level = create_tree(createTwig(-0.4, -35, flags));
+    river->logTree->next_level->current_level = create_tree(createTwig(0.4, 85, flags));
     river->logMaterial = (Material) { { 0.2, 0.2, 0.2, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 40 };
     river->logTexture = loadTexture("res/wood.jpg");
 

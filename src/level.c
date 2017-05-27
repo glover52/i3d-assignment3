@@ -2,6 +2,14 @@
 #include "gl.h"
 #include "tree.h"
 
+static Model* createWheel(double x, double z, DrawingFlags* flags) {
+    Model* wheel = create_model(createCylinder(flags->segments, flags->segments, 1));
+    wheel->translation = (Vec3f) { x, 0.5, z};
+    wheel->scale = (Vec3f) { 0.3, 0.3, 0.3};
+    wheel->rotation = (Vec3f) { 0.0, 1.0, 0.0};
+    return wheel;
+}
+
 /*
  * Initialize the road with all of the cars and the stuff we need to render them
  */
@@ -12,6 +20,17 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
     road->numLanes = numLanes;
 
     road->enemyTree = create_tree(create_model(createCube()));
+
+    Model* wheel1 = createWheel(1.0, 1.2, flags);
+    Model* wheel2 = createWheel(-1.0, -1.2, flags);
+    Model* wheel3 = createWheel(1.0, -1.2, flags);
+    Model* wheel4 = createWheel(-1.0, 1.2, flags);
+
+    road->enemyTree->next_level = create_tree(wheel1);
+    road->enemyTree->next_level->current_level = create_tree(wheel2);
+    road->enemyTree->next_level->current_level->current_level = create_tree(wheel3);
+    road->enemyTree->next_level->current_level->current_level->current_level = create_tree(wheel4);
+
     road->enemyMaterial = (Material) { { 0.2, 0.2, 0.2, 1 }, { 1, 0, 0, 1 }, { 1, 1, 1, 1 }, 50 };
 
     // allocate and initialize all of our objects

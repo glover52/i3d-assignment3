@@ -61,7 +61,6 @@ typedef struct {
     float width, height, length;
     Vec3f pos;
     Mesh* wallMesh;
-    Material wallMaterial;
     Wall* walls;
 } Skybox;
 

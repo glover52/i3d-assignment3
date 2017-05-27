@@ -95,7 +95,6 @@ static void initSkybox(Skybox* skybox, float width, float height, float length) 
     skybox->length = length;
 
     skybox->wallMesh = createWall();
-    skybox->wallMaterial = (Material) { { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 0 };
 
     // allocate and initialize all of our objects
     skybox->walls = calloc(5, sizeof(Wall));
@@ -275,7 +274,6 @@ static void renderSkybox(Skybox* skybox, DrawingFlags* flags) {
     glPushAttrib(GL_CURRENT_BIT | GL_LIGHTING_BIT);
 
     for(size_t i = 0; i < 5; ++i) {
-        applyMaterial(&skybox->wallMaterial);
         submitColor(WHITE);
 
         Wall* wall = skybox->walls + i;

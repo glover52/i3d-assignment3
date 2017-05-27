@@ -17,3 +17,4 @@ typedef struct {
 void initSkybox(Skybox* skybox, Vec3f pos);
 void renderSkybox(Skybox* skybox, DrawingFlags* flags);
 void destroySkybox(Skybox* skybox);
+void updateSkybox(Skybox* skybox, Vec3f pos);

@@ -161,6 +161,7 @@ static void update() {
     updatePlayer(&globals.player, dt, &globals.controls);
 
     globals.camera.pos = globals.player.pos;
+    updateSkybox(&globals.skybox, globals.camera.pos);
     glutPostRedisplay();
 }
 

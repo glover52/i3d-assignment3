@@ -31,8 +31,8 @@ Mesh* createMesh(size_t numVerts, size_t numIndices);
 void destroyMesh(Mesh* mesh);
 void renderMesh(Mesh* mesh, DrawingFlags* flags);
 
-Mesh* createCube();
-Mesh* createWall();
+Mesh* createCube(void);
+Mesh* createWall(void);
 Mesh* createPlane(float width, float height, size_t rows, size_t cols, bool isTerrain);
 Mesh* createSphere(size_t segments, size_t slices);
 Mesh* createCylinder(size_t segments, size_t slices, float radius);

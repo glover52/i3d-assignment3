@@ -5,11 +5,18 @@
 static Model* createWheel(double x, double z, DrawingFlags* flags) {
     Model* wheel = create_model(createCylinder(flags->segments, flags->segments, 1));
     wheel->translation = (Vec3f) { x, 0.5, z};
-    wheel->scale = (Vec3f) { 0.3, 0.3, 0.3};
+    wheel->scale = (Vec3f) { 0.5, 0.5, 0.5};
     wheel->rotation = (Vec3f) { 0.0, 1.0, 0.0};
     return wheel;
 }
 
+static Model* createCarBody() {
+    Model* body = create_model(createCube());
+    body->translation = (Vec3f) { 0, 1.0, 0};
+    body->scale = (Vec3f) { 0.8, 0.4, 0.9};
+    body->rotation = (Vec3f) { 0.0, 1.0, 0.0};
+    return body;
+}
 /*
  * Initialize the road with all of the cars and the stuff we need to render them
  */
@@ -26,6 +33,9 @@ static void initRoad(Road* road, float laneWidth, float laneHeight, size_t numLa
     Model* wheel3 = createWheel(1.0, -1.2, flags);
     Model* wheel4 = createWheel(-1.0, 1.2, flags);
 
+    road->enemyTree->current_level = create_tree(createCarBody());
+    road->enemyTree->current_level->next_level = create_tree(createCarBody());
+    road->enemyTree->current_level->next_level->next_level = create_tree(createCarBody());
     road->enemyTree->next_level = create_tree(wheel1);
     road->enemyTree->next_level->current_level = create_tree(wheel2);
     road->enemyTree->next_level->current_level->current_level = create_tree(wheel3);

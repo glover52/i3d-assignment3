@@ -81,7 +81,19 @@ static void render() {
 }
 
 static void die() {
+    if (globals.osd.lives <= 1) {
+        puts("GAME OVER!");
+        printf("You achieved a score of %d\n.", globals.osd.score);
+        exit(EXIT_SUCCESS);
+    }
     globals.osd.lives--;
+    globals.player.jump = false;
+    globals.player.pos = (Vec3f) { 0, 0, 4 };
+    globals.player.initPos = (Vec3f) { 0, 0, 4 };
+}
+
+static void win() {
+    globals.osd.score++;
     globals.player.jump = false;
     globals.player.pos = (Vec3f) { 0, 0, 4 };
     globals.player.initPos = (Vec3f) { 0, 0, 4 };
@@ -115,6 +127,13 @@ static bool curiosityKilledTheCat() {
         || isDrowning(&globals.player, zriver, zriver + height);
 }
 
+static bool successfulCrossing() {
+    Vec3f pos = globals.player.pos;
+    float zlimit = globals.level.height / 2;
+    float zriver = globals.level.river.pos.z;
+    return zriver > pos.z && pos.z < zlimit;
+}
+
 static void handleCollisions() {
     if (globals.player.attachedTo == NULL) {
         Level level = globals.level;
@@ -124,9 +143,11 @@ static void handleCollisions() {
             globals.player.attachedTo = log;
         } else {
             Entity *car = detectCollisions(&globals.player, level.road.enemies, level.road.numLanes);
-            bool offLimits = curiosityKilledTheCat();
-            if (car != NULL || offLimits) {
-                printf("off limits: %d, car: %d\n", offLimits, car != NULL);
+            if (successfulCrossing()) {
+                puts("WIN!");
+                win();
+            } else if (car != NULL || curiosityKilledTheCat()) {
+                puts("DEAD!");
                 die();
             }
         }

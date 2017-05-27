@@ -6,6 +6,7 @@
 #include "mesh.h"
 #include "camera.h"
 #include "osd.h"
+#include "skybox.h"
 
 /*
  * All of the global state for our main functions is declared here
@@ -18,4 +19,5 @@ typedef struct {
     DrawingFlags drawingFlags;
     bool halt;
     OSD osd;
+    Skybox skybox;
 } Globals;

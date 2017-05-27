@@ -48,22 +48,6 @@ typedef struct {
     unsigned int terrainTexture;
 } River;
 
-typedef struct {
-    Vec3f pos, size;
-    Vec3f rot;
-    unsigned int wallTexture;
-} Wall;
-
-/*
- * Skybox
- */
-typedef struct {
-    float width, height, length;
-    Vec3f pos;
-    Mesh* wallMesh;
-    Wall* walls;
-} Skybox;
-
 /*
  * Bundles up of the state for our game, including a mesh and material for our play area
  */
@@ -74,7 +58,6 @@ typedef struct {
     unsigned int terrainTexture;
     Road road;
     River river;
-    Skybox skybox;
 } Level;
 
 void generateLevelGeometry(Level* level, size_t segments);

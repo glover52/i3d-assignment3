@@ -8,12 +8,14 @@
 #include "level.h"
 #include "osd.h"
 #include "collision.h"
+#include "skybox.h"
 
 Globals globals;
 
 static void cleanup() {
     destroyPlayer(&globals.player);
     destroyLevel(&globals.level);
+    destroySkybox(&globals.skybox);
 }
 
 static void updateKeyChar(unsigned char key, bool state) {
@@ -70,6 +72,8 @@ static void render() {
 
     renderPlayer(&globals.player, &globals.drawingFlags);
     renderLevel(&globals.level, &globals.drawingFlags);
+
+    renderSkybox(&globals.skybox, &globals.drawingFlags);
 
     renderOSD(&globals.osd);
 
@@ -308,6 +312,7 @@ static void init() {
     globals.camera.pos = globals.player.pos;
     globals.camera.width = 800;
     globals.camera.height = 600;
+    initSkybox(&globals.skybox, globals.camera.pos);
 }
 
 int main(int argc, char **argv) {

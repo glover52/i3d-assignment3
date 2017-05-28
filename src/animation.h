@@ -14,7 +14,9 @@ typedef struct {
     size_t frame_count;
 
     Keyframe* keyframes;
+
+    float* attribute_to_update;
 } Interpolator;
 
-float interpolate(Interpolator);
-
+void interpolate(Interpolator*, float dt);
+Interpolator* createInterpolator(size_t frame_count);

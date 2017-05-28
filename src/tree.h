@@ -2,6 +2,7 @@
 
 #include "vec.h"
 #include "mesh.h"
+#include "animation.h"
 
 typedef struct {
     Vec3f translation;
@@ -10,6 +11,7 @@ typedef struct {
     int angle;
     Mesh *mesh;
     unsigned int texture;
+    Interpolator *interpolator;
 } Model;
 
 typedef struct node {
@@ -21,5 +23,6 @@ typedef struct node {
 void render_tree(Node *node, DrawingFlags* flags);
 void destroy_tree(Node *node);
 void destroy_model(Model *model);
+void update_tree(Node* node, float dt);
 Node* create_tree(Model *model);
 Model* create_model(Mesh *mesh);

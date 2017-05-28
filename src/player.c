@@ -112,6 +112,28 @@ static void addHead(Node* body, size_t segments) {
     headAssemply->next_level->current_level = create_tree(eye2);
 
     body->current_level = headAssemply;
+
+    head->interpolator = createInterpolator(5);
+    eye1->interpolator = createInterpolator(3);
+    eye2->interpolator = createInterpolator(3);
+
+    head->interpolator->keyframes[0] = (Keyframe) {0.0, 0.2};
+    head->interpolator->keyframes[1] = (Keyframe) {1.0, 0.4};
+    head->interpolator->keyframes[2] = (Keyframe) {2.0, 0.5};
+    head->interpolator->keyframes[3] = (Keyframe) {4.0, 0.2};
+    head->interpolator->keyframes[4] = (Keyframe) {5.0, 0.2};
+
+    eye1->interpolator->keyframes[0] = (Keyframe) {0.0, 1.0};
+    eye1->interpolator->keyframes[1] = (Keyframe) {2.5, 2.0};
+    eye1->interpolator->keyframes[2] = (Keyframe) {5.0, 1.0};
+
+    eye2->interpolator->keyframes[0] = (Keyframe) {0.0, 1.0};
+    eye2->interpolator->keyframes[1] = (Keyframe) {2.0, 2.0};
+    eye2->interpolator->keyframes[2] = (Keyframe) {5.0, 1.0};
+
+    eye1->interpolator->attribute_to_update = &eye1->scale.z;
+    eye2->interpolator->attribute_to_update = &eye2->scale.z;
+    head->interpolator->attribute_to_update = &head->scale.y;
 }
 
 /*
@@ -134,6 +156,7 @@ void generatePlayerGeometry(Player* player, size_t segments) {
  */
 void updatePlayer(Player* player, float dt, Controls* controls) {
     if (!player->jump) {
+        update_tree(player->tree->current_level, dt);
 
         // process controls
         if (controls->up) {

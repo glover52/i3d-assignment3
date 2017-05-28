@@ -1,6 +1,21 @@
 #include "tree.h"
 #include "mesh.h"
 #include "gl.h"
+#include "animation.h"
+
+void update_tree(Node *node, float dt) {
+    if (node == NULL) {
+        return;
+    }
+    Model* model = node->model;
+    if (model == NULL || model->interpolator == NULL) {
+        return;
+    }
+
+    interpolate(model->interpolator, dt);
+    update_tree(node->next_level, dt);
+    update_tree(node->current_level, dt);
+}
 
 void render_tree(Node *node, DrawingFlags* flags) {
     if (node == NULL) {
@@ -45,8 +60,12 @@ void destroy_model(Model *model) {
     if (model == NULL) {
         return;
     }
-    if (model->mesh == NULL) {
+    if (model->mesh != NULL) {
         destroyMesh(model->mesh);
+    }
+    if (model->interpolator != NULL) {
+        free(model->interpolator->keyframes);
+        free(model->interpolator);
     }
     free(model);
 }
@@ -60,6 +79,7 @@ Model* create_model(Mesh *mesh) {
     model->scale = identity;
     model->rotation = none;
     model->angle = 0;
+    model->interpolator = calloc(sizeof(Interpolator), 1);
     return model;
 }
 

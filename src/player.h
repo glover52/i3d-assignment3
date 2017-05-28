@@ -18,6 +18,7 @@ typedef struct {
     Node* tree;
     Material material;
     Entity* attachedTo;
+    unsigned int texture;
 } Player;
 
 void initPlayer(Player* player, DrawingFlags* flags);

@@ -114,12 +114,7 @@ static void initRiver(River* river, float laneWidth, float laneHeight, size_t nu
         log->size = (Vec3f) { 0.1, 0.1, 0.5 };
         ++log;
     }
-    // Initialise the sand
-    // river->terrainMesh = createPlane(laneWidth, laneHeight, flags->segments, flags->segments, true);
-    // river->terrainMaterial = (Material) { { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, 90 };
-    // river->terrainTexture = loadTexture("res/sand.jpg");
 
-    // Initialise the river
     river->riverMesh = createPlane(laneWidth, laneHeight, flags->segments, flags->segments, false);
     river->riverMaterial = (Material) { { 0.3, 0.3, 0.3, RIVER_ALPHA }, { 0, 1, 1, RIVER_ALPHA }, { 0.7, 0.7, 0.7, RIVER_ALPHA }, 92 };
     river->riverTexture = loadTexture("res/water.jpg");

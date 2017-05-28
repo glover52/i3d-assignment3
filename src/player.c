@@ -2,6 +2,7 @@
 #include "gl.h"
 #include "state.h"
 #include "tree.h"
+#include "util.h"
 
 #define ROT_AMOUNT (M_PI / 4.0) // amount that rotation will change each frame the controls are pressed
 #define SPEED_AMOUNT 1.0 // amount that speed will change each frame the controls are pressed
@@ -41,7 +42,7 @@ void initPlayer(Player* player, DrawingFlags* flags) {
     player->g = 9.8;
     player->jump = false;
     player->attachedTo = NULL;
-
+    player->texture = loadTexture("res/frog.jpg");
     generatePlayerGeometry(player, flags->segments);
     player->material = (Material) { { 0.2, 0.2, 0.2, 1 }, { 0.1, 0.5, 0.9, 1 }, { 1, 1, 1, 1 }, 50 };
 }
@@ -240,7 +241,9 @@ void renderPlayer(Player* player, DrawingFlags* flags) {
     glScalef(player->size, player->size, player->size);
     applyMaterial(&player->material);
     glColor3f(0.1, 0.5, 0.9);
+    glBindTexture(GL_TEXTURE_2D, player->texture);
     render_tree(player->tree, flags);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
 
     // draw the visualization of the player's velocity at our current position

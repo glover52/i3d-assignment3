@@ -10,7 +10,7 @@
  */
 void initSkybox(Skybox* skybox, Vec3f pos) {
     skybox->pos = pos;
-    skybox->size = (Vec3f){ 500, 500, 500 };
+    skybox->size = (Vec3f){ 10, 10, 10};
 
     skybox->wallMesh = createWall();
 

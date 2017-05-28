@@ -52,7 +52,7 @@ void destroyPlayer(Player* player) {
     destroy_tree(player->tree);
 }
 
-Model* createLeg(double x, double z, double rot) {
+static Model* createLeg(double x, double z, double rot) {
     Model* leg = create_model(createCube());
     leg->translation = (Vec3f) { x, 0, z};
     leg->scale = (Vec3f) { 0.3, 0.3, 0.3};
@@ -61,20 +61,38 @@ Model* createLeg(double x, double z, double rot) {
     return leg;
 }
 
-void addLegs(Node* body) {
-    Model* leg1 = createLeg(0.7, 0.7, -45.0);
-    Model* leg2 = createLeg(-0.7, -0.7, -45.0);
-    Model* leg3 = createLeg(0.7, -0.7, -45.0);
-    Model* leg4 = createLeg(-0.7, 0.7, -45.0);
-
-    body->next_level = create_tree(leg1);
-    body->next_level->current_level = create_tree(leg2);
-    body->next_level->current_level = create_tree(leg2);
-    body->next_level->current_level->current_level = create_tree(leg3);
-    body->next_level->current_level->current_level->current_level = create_tree(leg4);
+static Model* createThigh(double x, double z, double rot) {
+    Model* leg = create_model(createCube());
+    leg->translation = (Vec3f) { x, 0, z};
+    leg->scale = (Vec3f) { 0.9, 0.9, 0.9};
+    leg->rotation = (Vec3f) { 0.0, 0.0, 1.0};
+    leg->angle = rot;
+    return leg;
 }
 
-void addHead(Node* body, size_t segments) {
+static void addLegs(Node* body) {
+    Node* leg1 = create_tree(createLeg(0.7, 0.7, -45.0));
+    Node* leg2 = create_tree(createLeg(-0.7, -0.7, -45.0));
+    Node* leg3 = create_tree(createLeg(0.7, -0.7, -45.0));
+    Node* leg4 = create_tree(createLeg(-0.7, 0.7, -45.0));
+
+    leg1->current_level = leg2;
+    leg2->current_level = leg3;
+    leg3->current_level = leg4;
+    body->next_level = leg1;
+
+    Node* thigh1 = create_tree(createThigh(1.0, 1.0, 0.0));
+    Node* thigh2 = create_tree(createThigh(-1.0, -1.0, 0.0));
+    Node* thigh3 = create_tree(createThigh(-1.0, -1.0, 0.0));
+    Node* thigh4 = create_tree(createThigh(1.0, 1.0, 0.0));
+
+    leg1->next_level = thigh1;
+    leg2->next_level = thigh2;
+    leg3->next_level = thigh3;
+    leg4->next_level = thigh4;
+}
+
+static void addHead(Node* body, size_t segments) {
     Model* head = create_model(createCube());
     head->scale = (Vec3f) {0.4, 0.3, 0.4};
     head->translation = (Vec3f) {0.0, 0.7, 0.7};

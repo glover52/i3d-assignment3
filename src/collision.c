@@ -6,9 +6,6 @@ bool detectCollision(Sphere *sphere1, Sphere *sphere2) {
     float radius_sum = sphere1->radius + sphere2->radius;
     float d_2 = dotVec3f(centre_diff, centre_diff);
 
-    if (d_2 < radius_sum * radius_sum)
-        printf("d^2 < r^2! --- %.2f < %.2f\n", d_2, radius_sum * radius_sum);
-
     return d_2 < radius_sum * radius_sum;
 }
 
@@ -19,10 +16,10 @@ Entity* detectCollisions(Player* player, Entity* entities, size_t num_entities) 
         Sphere objectSphere = { entity->pos, magVec3f(entity->size) };
 
         if (detectCollision(&playerSphere, &objectSphere)) {
-            printf("Detected a collision with %zu at (%.2f, %.2f, %.2f) and (%.2f, %.2f, %.2f)!\n",
-                    i,
-                    player->pos.x, player->pos.y, player->pos.z,
-                    entity->pos.x, entity->pos.y, entity->pos.z);
+            // printf("Detected a collision with %zu at (%.2f, %.2f, %.2f) and (%.2f, %.2f, %.2f)!\n",
+            //         i,
+            //         player->pos.x, player->pos.y, player->pos.z,
+            //         entity->pos.x, entity->pos.y, entity->pos.z);
             return entity;
         }
     }

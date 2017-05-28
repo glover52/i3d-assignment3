@@ -15,7 +15,7 @@ Interactive 3D Graphics and Animation
 - [x] Add an OSD which shows frame rate and time per frame.
 - [x] Game scoring.
 - [ ] Special effects when a frog is hit by a car, e.g. splattering (2D), using flattenedgeometry or exploding (3D) using a particle system.
-- [ ] Skybox.
+- [x] Skybox.
 
 ### Compile and Run
     make

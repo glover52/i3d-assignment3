@@ -146,7 +146,7 @@ Mesh* createCube() {
 Mesh* createWall() {
     Mesh* mesh = createMesh(4, 12);
     memcpy(mesh->verts, cubeVerts, 4 * sizeof(Vertex));
-    memcpy(mesh->indices, cubeIndices, 12 * sizeof(unsigned int));
+    memcpy(mesh->indices, cubeIndices, 6 * sizeof(unsigned int));
     return mesh;
 }
 

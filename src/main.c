@@ -293,6 +293,7 @@ static void mouseMotion(int x, int y) {
     if (globals.controls.rmb) {
         globals.camera.zoom += dY * 0.01;
         globals.camera.zoom = max(globals.camera.zoom, 0.5);
+        globals.camera.zoom = min(globals.camera.zoom, 10);
     }
 
     globals.camera.lastX = x;

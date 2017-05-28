@@ -19,4 +19,4 @@ typedef struct {
 } Interpolator;
 
 void interpolate(Interpolator*, float dt);
-Interpolator* createInterpolator(size_t frame_count);
+Interpolator* createInterpolator(size_t frame_count, float duration);

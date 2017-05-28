@@ -6,6 +6,7 @@
 #define ROT_AMOUNT (M_PI / 4.0) // amount that rotation will change each frame the controls are pressed
 #define SPEED_AMOUNT 1.0 // amount that speed will change each frame the controls are pressed
 
+
 /*
  * Update the player's position and velocity with frametime dt
  */
@@ -58,6 +59,12 @@ static Model* createLeg(double x, double z, double rot) {
     leg->scale = (Vec3f) { 0.3, 0.3, 0.3};
     leg->rotation = (Vec3f) { 0.0, 1.0, 0.0};
     leg->angle = rot;
+    leg->interpolator = createInterpolator(3, 0.2);
+    leg->interpolator->keyframes[0] = (Keyframe) {0.0, 0.0};
+    leg->interpolator->keyframes[1] = (Keyframe) {0.1, -z};
+    leg->interpolator->keyframes[2] = (Keyframe) {0.2, 0.0};
+    leg->interpolator->attribute_to_update = &leg->rotation.x;
+
     return leg;
 }
 
@@ -67,6 +74,11 @@ static Model* createThigh(double x, double z, double rot) {
     leg->scale = (Vec3f) { 0.9, 0.9, 0.9};
     leg->rotation = (Vec3f) { 0.0, 0.0, 1.0};
     leg->angle = rot;
+    leg->interpolator = createInterpolator(3, 0.2);
+    leg->interpolator->keyframes[0] = (Keyframe) {0.0, 0.0};
+    leg->interpolator->keyframes[1] = (Keyframe) {0.1, -z};
+    leg->interpolator->keyframes[2] = (Keyframe) {0.2, 0.0};
+    leg->interpolator->attribute_to_update = &leg->rotation.z;
     return leg;
 }
 
@@ -113,23 +125,23 @@ static void addHead(Node* body, size_t segments) {
 
     body->current_level = headAssemply;
 
-    head->interpolator = createInterpolator(5);
-    eye1->interpolator = createInterpolator(3);
-    eye2->interpolator = createInterpolator(3);
+    head->interpolator = createInterpolator(5, 3.0);
+    eye1->interpolator = createInterpolator(3, 0.6);
+    eye2->interpolator = createInterpolator(3, 0.6);
 
     head->interpolator->keyframes[0] = (Keyframe) {0.0, 0.2};
-    head->interpolator->keyframes[1] = (Keyframe) {1.0, 0.4};
+    head->interpolator->keyframes[1] = (Keyframe) {1.3, 0.4};
     head->interpolator->keyframes[2] = (Keyframe) {2.0, 0.5};
-    head->interpolator->keyframes[3] = (Keyframe) {4.0, 0.2};
-    head->interpolator->keyframes[4] = (Keyframe) {5.0, 0.2};
+    head->interpolator->keyframes[3] = (Keyframe) {2.7, 0.2};
+    head->interpolator->keyframes[4] = (Keyframe) {3.0, 0.2};
 
     eye1->interpolator->keyframes[0] = (Keyframe) {0.0, 1.0};
-    eye1->interpolator->keyframes[1] = (Keyframe) {2.5, 2.0};
-    eye1->interpolator->keyframes[2] = (Keyframe) {5.0, 1.0};
+    eye1->interpolator->keyframes[1] = (Keyframe) {0.3, 2.0};
+    eye1->interpolator->keyframes[2] = (Keyframe) {0.6, 1.0};
 
     eye2->interpolator->keyframes[0] = (Keyframe) {0.0, 1.0};
-    eye2->interpolator->keyframes[1] = (Keyframe) {2.0, 2.0};
-    eye2->interpolator->keyframes[2] = (Keyframe) {5.0, 1.0};
+    eye2->interpolator->keyframes[1] = (Keyframe) {0.3, 2.0};
+    eye2->interpolator->keyframes[2] = (Keyframe) {0.6, 1.0};
 
     eye1->interpolator->attribute_to_update = &eye1->scale.z;
     eye2->interpolator->attribute_to_update = &eye2->scale.z;
@@ -195,6 +207,7 @@ void updatePlayer(Player* player, float dt, Controls* controls) {
         player->initVel = mulVec3f(player->initVel, player->speed);
         player->vel = player->initVel;
     } else {
+        update_tree(player->tree->next_level, dt);
         integratePlayer(player, dt);
     }
 

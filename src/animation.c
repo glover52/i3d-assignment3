@@ -7,9 +7,9 @@ static float lerp(Keyframe* k0, Keyframe* k1, float t) {
     return k0->value + (t - k0->time) * (k1->value - k0->value) / (k1->time - k0->time);
 }
 
-Interpolator* createInterpolator(size_t frame_count) {
+Interpolator* createInterpolator(size_t frame_count, float duration) {
     Interpolator* interpolator = malloc(sizeof(Interpolator));
-    interpolator->duration = 5.0;
+    interpolator->duration = duration;
     interpolator->time = 0.0;
     interpolator->value = 0.0;
     interpolator->frame_count = frame_count;
